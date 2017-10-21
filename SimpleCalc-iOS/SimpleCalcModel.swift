@@ -1,79 +1,12 @@
 //
-//  ViewController.swift
+//  SimpleCalcModel.swift
 //  SimpleCalc-iOS
 //
 //  Created by studentuser on 10/19/17.
 //  Copyright © 2017 Thipok Cholsaipant. All rights reserved.
 //
 
-import UIKit
-
-class ViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
-    // Calculator Interface
-    
-    // State of the input
-    var userIsTyping = false
-    var decimalInput = false
-
-    @IBOutlet weak var display: UILabel!
-    
-    var displayValue: Double {
-        get {
-            return Double(display.text!)!
-        }
-        set {
-            display.text = String(newValue)
-        }
-    }
-    
-    @IBAction func touchDigit(_ sender: UIButton) {
-        let digit = sender.currentTitle!
-        // If the user is in the middle of typing digits. (Typing following digits.)
-        if userIsTyping && digit != "."{
-            let textInDisplay = display.text!
-            display.text = textInDisplay + digit
-        // If the user types decimal, when the input is not decimal
-        } else if digit == "." && !decimalInput {
-            let textInDisplay = display.text!
-            display.text = textInDisplay + digit
-            userIsTyping = true
-            decimalInput = true
-        // If the user types zero
-        } else if digit != "0" && !decimalInput {
-            display.text = digit
-            userIsTyping = true
-        }
-    }
-    
-    @IBAction func touchOperation(_ sender: UIButton) {
-        userIsTyping = false
-        if let mathOperations = sender.currentTitle {
-            switch mathOperations {
-            case "π":
-                displayValue = Double.pi
-            case "√":
-                displayValue = sqrt(displayValue)
-            case "AC":
-                display.text = "0"
-                decimalInput = false
-            default:
-                break
-            }
-        }
-    }
-}
+import Foundation
 
 class SimpleCalcModel {
     // Enumeration of possible types of operation
@@ -117,7 +50,7 @@ class SimpleCalcModel {
         ]
     
     
-    var operandInputEnded = false
+    var inputEnded = false
     var operands: [Int] = []
     var mathOperator: Operation?
     var result: Int?
@@ -137,7 +70,7 @@ class SimpleCalcModel {
             operands.append(value)
             switch mathOperator {
             case .binaryOperation?:
-                operandInputEnded = true
+                inputEnded = true
             case .aggregateOperation?:
                 resetAndRaiseError(error: "Unexpected Operand. Please try again.")
             default:
@@ -160,14 +93,14 @@ class SimpleCalcModel {
                 if operands.count < 1{
                     resetAndRaiseError(error: "Required at least one operand. please try again.")
                 } else {
-                    operandInputEnded = true
+                    inputEnded = true
                     mathOperator = thisOperation
                 }
             case .unaryOperation:
                 if operands.count != 1 {
                     resetAndRaiseError(error: "Expected one operand. Please try again.")
                 } else {
-                    operandInputEnded = true
+                    inputEnded = true
                 }
             }
         } else {
@@ -190,4 +123,7 @@ class SimpleCalcModel {
     }
     
 }
+
+
+
 
