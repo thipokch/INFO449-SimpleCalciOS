@@ -81,6 +81,7 @@ class ViewController: UIViewController {
                 calculatorModel = SimpleCalcModel()
             case "=": calculatorModel.inputOperand(display.text!)
                 if isRpnMode {
+                    print("RPN1")
                     calculatorModel.inputOperand(display.text!)
                 } else if let result = calculatorModel.performOperation() {
                     display.text = result
@@ -96,17 +97,23 @@ class ViewController: UIViewController {
                 if let result = calculatorModel.performOperation() {
                     display.text = result
                 }
-            case "RPN":
-                isRpnMode = true
-                sender.setTitle("BASIC", for: .normal)
             case "BASIC":
-                isRpnMode = false
+                isRpnMode = true
                 sender.setTitle("RPN", for: .normal)
+            case "RPN":
+                isRpnMode = false
+                sender.setTitle("BASIC", for: .normal)
             default:
-                calculatorModel.inputOperand(display.text!)
-                calculatorModel.inputOperator(mathOperations)
-                if isRpnMode, let result = calculatorModel.performOperation() {
+                
+                if isRpnMode {
+                    calculatorModel.inputOperator(mathOperations + mathOperations)
+                    calculatorModel.inputOperand(display.text!)
+                    let result = calculatorModel.performOperation()
+                    print("RPN2")
                     display.text = result
+                } else {
+                    calculatorModel.inputOperand(display.text!)
+                    calculatorModel.inputOperator(mathOperations)
                 }
                 userIsTyping = false
                 decimalInput = false
@@ -124,6 +131,7 @@ class SimpleCalcModel {
         case unaryOperation((Double) -> Double)
         // User type the operands, then operation is then typed and performed
         case aggregateOperation(([Double]) -> Double)
+        case arrayOperation(([Double]) -> Double)
     }
     
     // Dictionary of possible operations
@@ -153,6 +161,35 @@ class SimpleCalcModel {
             }
             return Double(accumulator)
         }),
+        "++" : Operation.arrayOperation({
+            var sum = 0.0
+            for num in $0 {
+                sum += num
+            }
+            return sum
+            }),
+        "--" : Operation.arrayOperation({
+            var accumulator = 0.0
+            for num in $0 {
+                accumulator -= num
+            }
+            return accumulator
+        }),
+        "**" : Operation.arrayOperation({
+            var accumulator = 0.0
+            for num in $0 {
+                accumulator *= num
+            }
+            return accumulator
+        }),
+        "//" : Operation.arrayOperation({
+            var accumulator = 0.0
+            for num in $0 {
+                accumulator /= num
+            }
+            return accumulator
+        })
+        
         ]
     
     var operands: [Double] = []
@@ -195,6 +232,12 @@ class SimpleCalcModel {
                 } else {
                     mathOperator = thisOperation
                 }
+            case .arrayOperation:
+                if operands.count < 1{
+                    resetAndRaiseError(error: "Required at least one operand. please try again.")
+                } else {
+                    mathOperator = thisOperation
+                }
             }
         }
     }
@@ -209,6 +252,8 @@ class SimpleCalcModel {
                 result = function(operands)
             case .unaryOperation(let function):
                 result = function(operands[0])
+            case .arrayOperation(let function):
+                result = function(operands)
             }
             operands = []
             mathOperator = nil
