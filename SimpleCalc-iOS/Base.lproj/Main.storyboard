@@ -343,8 +343,10 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="display" destination="Zpv-VW-N8j" id="8iu-hq-EwF"/>
+                        <outlet property="firstEnter" destination="u48-e3-Tad" id="3ct-SF-ikr"/>
                         <outlet property="firstOperatorView" destination="0LO-3V-Jzd" id="eoc-KO-HAF"/>
                         <outlet property="mainInputView" destination="Pcn-ii-Wjx" id="cqa-gv-oAT"/>
+                        <outlet property="secondEnter" destination="u48-e3-Tad" id="V65-EF-ULI"/>
                         <outlet property="secondOperatorView" destination="fz4-BC-VYS" id="MOO-iR-UdA"/>
                     </connections>
                 </viewController>

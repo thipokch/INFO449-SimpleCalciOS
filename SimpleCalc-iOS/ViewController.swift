@@ -15,6 +15,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var firstOperatorView: UIStackView!
     @IBOutlet weak var secondOperatorView: UIStackView!
+    @IBOutlet weak var firstEnter: UIButton!
+    @IBOutlet weak var secondEnter: UIButton!
     
     
     override func viewDidLoad() {
@@ -134,7 +136,7 @@ class SimpleCalcModel {
         "-" : Operation.binaryOperation({ $0 - $1 }),
         "*" : Operation.binaryOperation({ $0 * $1 }),
         "/" : Operation.binaryOperation({ $0 / $1 }),
-        "%" : Operation.binaryOperation({ ($0 * $1) * (1 - $1) }),
+        "%" : Operation.binaryOperation({ $0.truncatingRemainder(dividingBy: $1) }),
         "count" : Operation.aggregateOperation({ Double($0.count) }),
         "avg" : Operation.aggregateOperation({
             var sum = 0.0
