@@ -68,7 +68,6 @@ class ViewController: UIViewController {
     
     @IBAction func touchOperation(_ sender: UIButton) {
         userIsTyping = false
-
         if let mathOperations = sender.currentTitle {
             switch mathOperations {
             case "π":
@@ -79,11 +78,9 @@ class ViewController: UIViewController {
                 display.text = "0"
                 decimalInput = false
                 calculatorModel = SimpleCalcModel()
-            case "=": calculatorModel.inputOperand(display.text!)
-                if isRpnMode {
-                    print("RPN1")
-                    calculatorModel.inputOperand(display.text!)
-                } else if let result = calculatorModel.performOperation() {
+            case "=":
+                calculatorModel.inputOperand(display.text!)
+                if !isRpnMode, let result = calculatorModel.performOperation() {
                     display.text = result
                 }
             case "...":
@@ -104,13 +101,10 @@ class ViewController: UIViewController {
                 isRpnMode = false
                 sender.setTitle("BASIC", for: .normal)
             default:
-                
                 if isRpnMode {
                     calculatorModel.inputOperator(mathOperations + mathOperations)
                     calculatorModel.inputOperand(display.text!)
-                    let result = calculatorModel.performOperation()
-                    print("RPN2")
-                    display.text = result
+                    display.text = calculatorModel.performOperation()
                 } else {
                     calculatorModel.inputOperand(display.text!)
                     calculatorModel.inputOperator(mathOperations)
@@ -214,11 +208,7 @@ class SimpleCalcModel {
         if mathOperator == nil, let thisOperation = operations[input]{
             switch thisOperation {
             case .binaryOperation:
-                if operands.count != 1{
-                    resetAndRaiseError(error: "Unexpected Operation. Please try again.")
-                } else {
-                    mathOperator = thisOperation
-                }
+                mathOperator = thisOperation
             case .aggregateOperation:
                 if operands.count < 1{
                     resetAndRaiseError(error: "Required at least one operand. please try again.")
